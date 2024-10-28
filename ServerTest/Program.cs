@@ -8,6 +8,7 @@ namespace ServerTest
 {
     class Program
     {
+        private List<TcpClient> clients = new();
         static void Main(string[] args)
         {
             AysncEchoServer().Wait();
@@ -45,9 +46,6 @@ namespace ServerTest
                         // 비동기 송신
                         await stream.WriteAsync(buff, 0, nbytes).ConfigureAwait(false);
                     }
-
-                    stream.Close();
-                    tc.Close();
                 }
             }
             catch (Exception ex)
