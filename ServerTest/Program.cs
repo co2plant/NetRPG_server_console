@@ -2,31 +2,33 @@
 using System.Net;
 using System;
 using System.Threading.Tasks;
+using System.Threading;
 using System.Text;
 
 namespace ServerTest
 {
+
     class Program
     {
         private List<TcpClient> clients = new();
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            AysncEchoServer().Wait();
+            await AsyncEchoServer();
         }
  
-        async static Task AysncEchoServer()
+        static async Task AsyncEchoServer()
         {           
             TcpListener listener = new TcpListener(IPAddress.Any, 7000);
             listener.Start();            
             while (true)
             {
-                TcpClient tc = await listener.AcceptTcpClientAsync().ConfigureAwait(false);                
+                TcpClient tc = await listener.AcceptTcpClientAsync().ConfigureAwait(false);           
                  
                 Task.Factory.StartNew(AsyncTcpProcess, tc);                
             }
         }
  
-        async static void AsyncTcpProcess(object o)
+        static async void AsyncTcpProcess(object o)
         {
             TcpClient tc = (TcpClient)o;
  

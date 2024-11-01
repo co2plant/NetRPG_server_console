@@ -12,7 +12,7 @@ namespace ClientTest
     {
         static void Main(string[] args)
         {
-            TcpClient tc = new TcpClient("127.0.0.1", 7000);
+            TcpClient tc = new TcpClient("141.164.39.201", 7000);
 
             string msg = "Hello World!";
             byte[] buff = Encoding.UTF8.GetBytes(msg);
