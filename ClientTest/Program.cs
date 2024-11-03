@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace ClientTest
 {
@@ -21,9 +16,9 @@ namespace ClientTest
                     
             stream.Write(buff, 0, buff.Length);
 
-            byte[] outbuff = new byte[1024];
-            int nbytes = stream.Read(outbuff, 0, outbuff.Length);
-            string output = Encoding.UTF8.GetString(outbuff, 0, nbytes);
+            byte[] outbuffer = new byte[1024];
+            int nbytes = stream.Read(outbuffer, 0, outbuffer.Length);
+            string output = Encoding.UTF8.GetString(outbuffer, 0, nbytes);
 
             stream.Close();
             tc.Close();
