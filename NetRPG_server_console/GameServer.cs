@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace NetRPG_server_console
 {
-    public class ChatServer
+    public class GameServer
     {
         private TcpListener listener;
-        private Dictionary<string, Room> rooms = new();
+        private Dictionary<string, List<TcpClient>> rooms = new();
 
-        public ChatServer(string ipAddress, int port)
+        public GameServer(string ipAddress, int port)
         {
             listener = new TcpListener(IPAddress.Parse(ipAddress), port);
         }
@@ -20,7 +20,7 @@ namespace NetRPG_server_console
         public async Task StartAsync()
         {
             listener.Start();
-            Console.WriteLine("Chat server started...");
+            Console.WriteLine("Game server started...");
 
             while (true)
             {
@@ -38,14 +38,12 @@ namespace NetRPG_server_console
 
             if (!rooms.ContainsKey(roomName))
             {
-                rooms[roomName] = new Room((roomName));
+                rooms[roomName] = new List<TcpClient>();
             }
 
-            Room room = rooms[roomName];
-            if (!room.IsFull)
+            if (rooms[roomName].Count < 4)
             {
-                User user = new User(GenerateUserId(), "User" + GenerateUserId(), client);
-                room.AddUser(user);
+                rooms[roomName].Add(client);
                 await BroadcastMessageAsync(roomName, $"{client.Client.RemoteEndPoint} joined the room.");
             }
             else
@@ -59,16 +57,11 @@ namespace NetRPG_server_console
         private async Task BroadcastMessageAsync(string roomName, string message)
         {
             byte[] buffer = Encoding.UTF8.GetBytes(message);
-            foreach (var user in rooms[roomName].Users)
+            foreach (var client in rooms[roomName])
             {
-                NetworkStream stream = user.Client.GetStream();
+                NetworkStream stream = client.GetStream();
                 await stream.WriteAsync(buffer, 0, buffer.Length);
             }
-        }
-
-        private int GenerateUserId()
-        {
-            return new Random().Next(1, 1000);
         }
     }
 }
