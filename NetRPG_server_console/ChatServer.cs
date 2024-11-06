@@ -14,7 +14,7 @@ namespace NetRPG_server_console
 
         public ChatServer(string ipAddress, int port)
         {
-            listener = new TcpListener(IPAddress.Parse(ipAddress), port);
+            listener = new TcpListener(IPAddress.Any, port);
         }
 
         public async Task StartAsync()
