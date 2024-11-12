@@ -2,12 +2,13 @@
 {
     public class Room
     {
-        public string Name { get; set; }
+        public string Id { get; set; }
+        public string Title { get; set; }
         public List<User> Users { get; set; }
 
-        public Room(string name)
+        public Room(string title)
         {
-            Name = name;
+            Title = title;
             Users = new List<User>();
         }
 
