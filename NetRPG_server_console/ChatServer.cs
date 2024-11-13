@@ -9,22 +9,22 @@ namespace NetRPG_server_console
 {
     public class ChatServer
     {
-        private TcpListener listener;
-        private Dictionary<string, Room> rooms = new();
+        private TcpListener _listener;
+        private Dictionary<string, Room> _rooms = new();
 
-        public ChatServer(string ipAddress, int port)
+        public ChatServer(IPAddress ipAddress, int port)
         {
-            listener = new TcpListener(IPAddress.Any, port);
+            _listener = new TcpListener(ipAddress, port);
+            
         }
 
         public async Task StartAsync()
         {
-            listener.Start();
+            _listener.Start();
             Console.WriteLine("Chat server started...");
-
             while (true)
             {
-                TcpClient client = await listener.AcceptTcpClientAsync();
+                TcpClient client = await _listener.AcceptTcpClientAsync();
                 Task.Run(() => HandleClientAsync(client));
             }
         }
@@ -34,19 +34,20 @@ namespace NetRPG_server_console
             NetworkStream stream = client.GetStream();
             byte[] buffer = new byte[1024];
             int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
-            string roomName = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+            string roomTitle = Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
-            if (!rooms.ContainsKey(roomName))
+            if (!_rooms.ContainsKey(roomTitle))
             {
-                rooms[roomName] = new Room((roomName));
+                _rooms[roomTitle] = new Room((roomTitle));
+                Console.WriteLine("Room created: " + roomTitle);
             }
 
-            Room room = rooms[roomName];
+            Room room = _rooms[roomTitle];
             if (!room.IsFull)
             {
                 User user = new User(GenerateUserId(), "User" + GenerateUserId(), client);
                 room.AddUser(user);
-                await BroadcastMessageAsync(roomName, $"{client.Client.RemoteEndPoint} joined the room.");
+                await BroadcastMessageAsync(roomTitle, $"{client.Client.RemoteEndPoint} joined the room.");
             }
             else
             {
@@ -56,10 +57,10 @@ namespace NetRPG_server_console
             }
         }
 
-        private async Task BroadcastMessageAsync(string roomName, string message)
+        private async Task BroadcastMessageAsync(string roomTitle, string message)
         {
             byte[] buffer = Encoding.UTF8.GetBytes(message);
-            foreach (var user in rooms[roomName].Users)
+            foreach (var user in _rooms[roomTitle].Users)
             {
                 NetworkStream stream = user.Client.GetStream();
                 await stream.WriteAsync(buffer, 0, buffer.Length);

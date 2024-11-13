@@ -12,9 +12,9 @@ namespace NetRPG_server_console
         private TcpListener listener;
         private Dictionary<string, List<TcpClient>> rooms = new();
 
-        public GameServer(string ipAddress, int port)
+        public GameServer(IPAddress ipAddress, int port)
         {
-            listener = new TcpListener(IPAddress.Any, port);
+            listener = new TcpListener(ipAddress, port);
         }
 
         public async Task StartAsync()
