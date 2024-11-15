@@ -21,6 +21,14 @@
                 Users.Add(user);
             }
         }
+
+        public void RemoveUser(User user)
+        {
+            if (Users.Contains(user))
+            {
+                Users.Remove(user);
+            }
+        }
     }
 }
 
