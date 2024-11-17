@@ -31,7 +31,11 @@ namespace NetRPG_server_console
         private async Task HandleClientAsync(TcpClient client)
         {
             NetworkStream stream = client.GetStream();
-            byte[] buffer = new byte[1024];
+            byte[] lengthBuffer = new byte[4];
+            await stream.ReadAsync(lengthBuffer, 0, lengthBuffer.Length);
+            int messageLength = BitConverter.ToInt32(lengthBuffer, 0);
+            
+            byte[] buffer = new byte[messageLength];
             int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
             string roomTitle = Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
